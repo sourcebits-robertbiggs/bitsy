@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>Bitsy: Data Binding</title>
+  <script src='../dist/bitsy-1.0.0.js'></script>
+
+  <style>
+    body {
+      padding: 20px;
+    }
+    pre {
+      padding: 20px;
+      border: dashed 2px #ccc;
+      margin: 10px;
+      white-space: pre-wrap;
+    }
+    #result {
+      border: solid 2px green;
+      padding: 2px;
+      height: 20px;
+    }
+  </style>
+  <script>
+    $(function() {
+      $.bindData();  
+
+      /////////////////////////////////
+      // Define a Model for text input:
+      /////////////////////////////////
+      var InputTextModel = function() {
+        // Define a private property to hold the data:
+        var private_data = '';
+
+        // Subscribe to a broadcast, and when this occurs,
+        // update the value of the private data:
+        $.subscribe('data-binding-my-message2', function(event, data) {
+          private_data = data;
+        });
+
+        // Define a getter:
+        this.get = function() {
+          return private_data;
+        }
+
+        // Define a setter:
+        this.set = function(data) {
+          // Broadcast "data-binding- my-message".
+          // This will update the label:
+          $.publish('data-binding-my-message2', data);
+
+          // Define a new broadcast.
+          // This will be used by a mediator
+          // for the text input's value:
+          $.publish('update-text-input-value', data);
+        };
+      };
+      var myModel = new InputTextModel();
+
+      ///////////////////////////////////////
+      // Define mediator to update text input
+      // when the data model is changed by
+      // its internal set function.
+      ///////////////////////////////////////
+      var InputTextMediator = $.subscribe('update-text-input-value', function(event, data) {
+        $('#myMessage2').value = data;
+        $('#result').textContent = data;
+      });
+
+      /////////////////////////////////////////////////
+      // Update Model data when user selects an option:
+      /////////////////////////////////////////////////
+      $.on($('select'), 'change', function(event) {
+        var value = this.value
+        myModel.set(value);
+      });
+      var currentModelValue = $.subscribe('data-binding-my-message2', function(event, data) {
+        $('#result').textContent = data;
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>One-Way Data Binding</h1>
+  <p>Code Example:</p>
+  <pre>
+$(function() {
+  $.bindData(); 
+});    
+  </pre>
+  <p>The label is bound to the value of the text input:</p>
+  <input id='myMessage' name='myMessage' data-controller='my-message' type="text">
+  <span>Label: </span><label for="myMessage" data-model='my-message'></label>
+  <h2>Two-way Data Binding</h2>
+  <p>Code Example:</p>
+  <pre>
+$(function() {
+  $.bindData();  
+
+  /////////////////////////////////
+  // Define a Model for text input:
+  /////////////////////////////////
+  var InputTextModel = function() {
+    // Define a private property to hold the data:
+    var private_data = '';
+
+    // Subscribe to a broadcast, and when this occurs,
+    // update the value of the private data:
+    $.subscribe('data-binding-my-message2', function(event, data) {
+      private_data = data;
+    });
+
+    // Define a getter:
+    this.get = function() {
+      return private_data;
+    }
+
+    // Define a setter:
+    this.set = function(data) {
+      // Broadcast "data-binding- my-message".
+      // This will update the label:
+      $.publish('data-binding-my-message2', data);
+
+      // Define a new broadcast.
+      // This will be used by a mediator
+      // for the text input's value:
+      $.publish('update-text-input-value', data);
+    };
+  };
+  var myModel = new InputTextModel();
+
+  ///////////////////////////////////////
+  // Define mediator to update text input
+  // when the data model is changed by
+  // its internal set function.
+  ///////////////////////////////////////
+  var InputTextMediator = $.subscribe('update-text-input-value', function(event, data) {
+    $('#myMessage2').value = data;
+    $('#result').textContent = data;
+  });
+
+  /////////////////////////////////////////////////
+  // Update Model data when user selects an option:
+  /////////////////////////////////////////////////
+  $.on($('select'), 'change', function(event) {
+    var value = this.value
+    myModel.set(value);
+  });
+  var currentModelValue = $.subscribe('data-binding-my-message2', function(event, data) {
+    $('#result').textContent = data;
+  });
+
+});   
+  </pre>
+  <p>The label is bound to the text input. There's also a model that is bound to the text input, and the text input is bound to the model. </p>
+  <input id='myMessage2' name='myMessage2' data-controller='my-message2' type="text">
+  <span>Label: </span><label for="myMessage2" data-model='my-message2'></label>
+  <div> 
+  <p>This select box will set a value on the data model. Since the select box is and text input are bound together, all other values will also update which you make a section:</p>
+    <select name="updateModel" id="updateModel">
+      <option value="First option for select box">First option for select box</option>
+      <option value="Another value from select box">Another value from select box</option>
+      <option value="Are we bored yet?">Are we bored yet?</option>
+    </select>
+  </div>
+  <div>
+    <p>This is the current value of the data model bound to the text input:</p>
+    <p id="result"></p>
+  </div>
+</body>
+</html>

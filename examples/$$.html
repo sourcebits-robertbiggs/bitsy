@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>Bitsy: $$ Selector</title>
+  <script src='../dist/bitsy-1.0.0.js'></script>
+  <style>
+    body {
+      padding: 20px;
+    }
+    pre {
+      padding: 20px;
+      border: dashed 2px #ccc;
+      margin: 10px;
+      white-space: pre-wrap;
+    }
+    li {
+      background-color: #ccc;
+      border: solid 1px #666;
+      margin: 4px;
+      padding: 4px;
+    }
+    div {
+      padding: 4px;
+      border: solid 1px #666;
+      margin: 4px;
+    }
+    #result {
+      border: solid 2px #999;
+      margin: 20px;
+      padding: 10px;
+    }
+    #result::before {
+      content: 'RESULT: ';
+      dipslay: block;
+      font-size: 12pt;
+      font-weight: bold;
+    }
+    #result span {
+      display: block;
+    }
+  </style>
+  <script>
+    $(function(){
+      var li = $$('li');
+      var div = $$('div');
+      var button = $$('.button');
+      var result = $$('#result span');
+      li.forEach(function(ctx) {
+        result[0].textContent += (ctx.textContent + ", ");
+      });
+      div.forEach(function(ctx) {
+        result[1].textContent += (ctx.textContent + ", ");
+      });
+      button.forEach(function(ctx) {
+        result[2].textContent += (ctx.textContent + ", ");
+      });
+    });
+  </script>
+</head>
+<body>
+<h1>The <code>$$</code> selector always returns an array of matches, even if only one.</h1>
+
+<p>Code example:</p>
+<pre>
+$(function(){
+  var li = $$('li');
+  var div = $$('div');
+  var button = $$('.button');
+  var result = $$('#result span');
+  li.forEach(function(ctx) {
+    result[0].textContent += (ctx.textContent + ", ");
+  });
+  div.forEach(function(ctx) {
+    result[1].textContent += (ctx.textContent + ", ");
+  });
+  button.forEach(function(ctx) {
+    result[2].textContent += (ctx.textContent + ", ");
+  });
+});
+</pre>
+  <ul>
+    <li>List Item One</li>
+    <li>List Item Two</li>
+    <li>List Item Three</li>
+  </ul>
+  <div>DIV 1</div>
+  <div>DIV 2</div>
+  <div>DIV 3</div>
+  <button class='button'>Button 1</button>
+  <button class='button'>Button 2</button>
+  <br>
+  <section id="result">
+    <span></span>
+    <span></span>
+    <span></span>
+  </section>
+</body>
+</html>

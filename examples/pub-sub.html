@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>Bitsy: Pub/Sub</title>
+  <script src='../dist/bitsy-1.0.0.js'></script>
+
+  <style>
+    body {
+      padding: 20px;
+    }
+    pre {
+      padding: 20px;
+      border: dashed 2px #ccc;
+      margin: 10px;
+      white-space: pre-wrap;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    li {
+      list-style: none;
+      background-color: #fafafa;
+      border: solid 1px #ccc;
+      margin: 4px;
+      padding: 4px;
+    }
+    div {
+      padding: 4px;
+      border: solid 1px #666;
+      margin: 4px;
+    }
+    li {
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    $(function() {
+      // Two methods to subscribe to:
+      var arraySubscriber = function( topic , data ) {
+        if (data instanceof Array) {
+          if (data[0] instanceof Object) {
+            data.forEach(function(ctx) {
+              if (ctx['news-flash']) {
+                $.append($('.list'), '<li><p>Array: ' + topic + "</p><p><strong>" + ctx['news-flash'] + '</strong></p></li>');
+              } else {
+                $.append($('.list'), '<li><p>Array: ' + topic + "</p><p><strong>" + ctx['update'] + '</strong></p></li>');
+              }
+            });
+          } else {
+            $.append($('.list'), '<li><p>Array: ' + topic + "</p><p><strong>" + data.join(' ') + '.</strong></p></li>');
+          }
+        }
+      };
+      
+      var stringSubscriber = function(topic, string) {
+        if (typeof string === 'string') {
+          $.append($('.list'), '<li><p>String: ' + topic + ': <strong>' + string + '</strong></p></li>');
+        }
+      };
+
+      var arrayOfObjs = function(topic, obj) {
+        if (obj instanceof Array) {
+          obj.forEach(function(ctx) {
+            if (ctx.name && ctx.job) {
+              $.append($('.list'), '<li><p><strong>My name is ' + ctx.name + ', and I am a ' + ctx.job + '.</strong></p></li>');
+            } else {
+              return;
+            }        
+          });
+        }
+      };
+      var stringSubscription = $.subscribe('news/update', stringSubscriber);
+      var arraySubscription = $.subscribe( 'news/update', arraySubscriber );  
+      var objSubscription = $.subscribe( 'users/new', arrayOfObjs );
+      
+      $.publish( 'news/update', 'This is the latest news!' );
+      $.publish( 'news/update', ['Somebody','did','something','funny'] );
+      $.publish( 'news/update', [{'news-flash':'Not much has happened yet.'},{'update':'More of the same.'}] );
+      
+      $.unsubscribe( stringSubscription );
+      // This doesn't get published:
+      $.publish( 'news/update', 'We need piles of money now!' );
+      // This does get published:
+      $.publish('users/new', [{'name':'Wobba', 'job':'developer'}, {'name':'Bozo the Clown', 'job':'clown'}, {'name':'Joe','job':'just a regular guy'}]);
+    });
+  </script>
+</head>
+<body>
+  <h1>Pub/Sub</h1>
+  <p>Code Example:</p>
+  <pre>
+$(function() {
+  // Two methods to subscribe to:
+  var arraySubscriber = function( topic , data ) {
+    if (data instanceof Array) {
+      if (data[0] instanceof Object) {
+        data.forEach(function(ctx) {
+          if (ctx['news-flash']) {
+            $.append($('.list'), '&lt;li&gt;&lt;p&gt;Array: ' + topic + "&lt;/p&gt;&lt;p&gt;&lt;strong&gt;" + ctx['news-flash'] + '&lt;/strong&gt;&lt;/p&gt;&lt;/li&gt;');
+          } else {
+            $.append($('.list'), '&lt;li&gt;&lt;p&gt;Array: ' + topic + "&lt;/p&gt;&lt;p&gt;&lt;strong&gt;" + ctx['update'] + '&lt;/strong&gt;&lt;/p&gt;&lt;/li&gt;');
+          }
+        });
+      } else {
+        $.append($('.list'), '&lt;li&gt;&lt;p&gt;Array: ' + topic + "&lt;/p&gt;&lt;p&gt;&lt;strong&gt;" + data.join(' ') + '.&lt;/strong&gt;&lt;/p&gt;&lt;/li&gt;');
+      }
+    }
+  };
+  
+  var stringSubscriber = function(topic, string) {
+    if (typeof string === 'string') {
+      $.append($('.list'), '&lt;li&gt;&lt;p&gt;String: ' + topic + ': &lt;strong&gt;' + string + '&lt;/strong&gt;&lt;/p&gt;&lt;/li&gt;');
+    }
+  };
+
+  var arrayOfObjs = function(topic, obj) {
+    if (obj instanceof Array) {
+      obj.forEach(function(ctx) {
+        if (ctx.name && ctx.job) {
+          $.append($('.list'), '&lt;li&gt;&lt;p&gt;&lt;strong&gt;My name is ' + ctx.name + ', and I am a ' + ctx.job + '.&lt;/strong&gt;&lt;/p&gt;&lt;/li&gt;');
+        } else {
+          return;
+        }        
+      });
+    }
+  };
+  var stringSubscription = $.subscribe('news/update', stringSubscriber);
+  var arraySubscription = $.subscribe( 'news/update', arraySubscriber );  
+  var objSubscription = $.subscribe( 'users/new', arrayOfObjs );
+  
+  $.publish( 'news/update', 'This is the latest news!' );
+  $.publish( 'news/update', ['Somebody','did','something','funny'] );
+  $.publish( 'news/update', [{'news-flash':'Not much has happened yet.'},{'update':'More of the same.'}] );
+  
+  $.unsubscribe( stringSubscription );
+  // This doesn't get published:
+  $.publish( 'news/update', 'We need piles of money now!' );
+  // This does get published:
+  $.publish('users/new', [{'name':'Wobba', 'job':'developer'}, {'name':'Bozo the Clown', 'job':'clown'}, {'name':'Joe','job':'just a regular guy'}]);
+});    
+  </pre>
+  <p>Result:</p>
+  <ul class='list'></ul>
+</body>
+</html>
