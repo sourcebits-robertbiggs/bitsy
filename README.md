@@ -20,7 +20,7 @@ Bitsy was created for making mobile Web apps. It's small, just 12kb minified. Al
 ##Building
 
 
-If you want to build Bitsy form source file, you'll need to have Node and Gulp installed. To install Node, go to there website and follow the instructions. Once that is done, open your terminal and run:
+If you want to build Bitsy from source code, you'll need to have Node and Gulp installed. To install Node, go to there website and follow the instructions. Once that is done, open your terminal and run:
 
 On Mac:
 
