@@ -20,7 +20,7 @@ Bitsy was created for making mobile Web apps. It's small, just 12kb minified. Al
 ##Building
 
 
-If you want to build Bitsy from source code, you'll need to have Node and Gulp installed. To install Node, go to there website and follow the instructions. Once that is done, open your terminal and run:
+If you want to build Bitsy from source code, you'll need to have Node and Gulp installed. To install Node, go to their website and follow the instructions. Once that is done, open your terminal and run:
 
 On Mac:
 
@@ -43,7 +43,7 @@ gulp
 <a name="dom-ready"></a>
 ##1. DOM Ready
 
-Bitsy has a DOM Ready function just like jQuery. You can use this to delay the execution of your code until the DOM is fully loaded. This is necessary when you code needs to access DOM nodes. 
+Bitsy has a DOM Ready function just like jQuery. You can use this to delay the execution of your code until the DOM is fully loaded. This is necessary when your code needs to access DOM nodes. 
 
 ```
 $(function() {
@@ -93,7 +93,7 @@ title.id = 'myTitle';
 
 ###$$: Multiple Selector
 
-If you want to get multiple DOM nodes, use the $$ method. This will always return an array. This method will always return an array, even when it finds nothing. To make sure you got something back you can check the returned array's length property.
+If you want to get multiple DOM nodes, use the $$ method. This method will always return an array, even when it finds nothing. To make sure you got something back you can check the returned array's length property.
 
 ```
 var li = $$('li');
@@ -103,11 +103,11 @@ var li = $$('li');
 // li.length would be 0.
 ```
 
-Because $$ always returns an array, we can access the nodes using any of the array methods, such as `forEach`, `filter`, `map`, etc.
+Because $$ returns an array, we can access the nodes using any of the array methods, such as `forEach`, `filter`, `map`, etc.
 
 ```
 $$('li').forEach(function(item) {
-  $.setStyle(ctx, {color: 'blue'});
+  $.setStyle(item, {color: 'blue'});
 });
 ```
 ```
@@ -149,7 +149,7 @@ element.parentElement
 <a name="object-extension"></a>
 ##3. Object Extension
 
-Bitsy allows you to extend any object. You can extend your own custom objects, or even native JavaScript objects using `$.extend`. By default, all properties added to an object are not ennumerable. This is convenient if you do extend native JavaScript objects because those properties won't be exposes by loops. 
+Bitsy allows you to extend any object. You can extend your own custom objects, or even native JavaScript objects using `$.extend`. By default, all properties added to an object are not ennumerable. This is convenient if you do extend native JavaScript objects because those properties won't be exposed to loops. 
 
 To extend an object, just pass it as the first argument, followed by an object literal of the keys and values you want to add:
 
