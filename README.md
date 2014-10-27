@@ -1272,7 +1272,7 @@ This method is used to define an actual route. It has the following methods:
 
 - beforeBoarding
 - onboard
-- disembark
+- ondisembark
 
 You pass a route as the argument to `$.route` method and then use one of the above three methods to define what to do with the route.
 
@@ -1308,7 +1308,7 @@ Although we've appended the `beforeBoarding` method after the `onboard` method, 
 
 If an error occurs while executing beforeBoarding, the onboard or disembark methods will not execute.
 
-####disembark
+####ondisembark
 
 To execute something when the user leaves a route, we use the `dismembark` method:
 
@@ -1319,7 +1319,7 @@ $.paths(function() {
     $.append(welcomeMessage, 'Thanks for dropping by.');
   }).beforeBoarding(function() {
     console.log('You are about to enter "users".');
-  }).disembark(function() {
+  }).ondisembark(function() {
     console.log('You have now left "users".')
   });
 });
