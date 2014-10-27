@@ -75,7 +75,7 @@ $.extend({
     return temp.childNodes.length === 1 ? temp.firstElementChild : Array.prototype.slice.call(temp.childNodes);
   },
 
-  ancestor : function( elem, selector ) {
+  closest : function( elem, selector ) {
        if (typeof selector === 'undefined') {
           return false;
        }

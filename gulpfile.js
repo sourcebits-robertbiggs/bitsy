@@ -9,7 +9,7 @@ var gulp = require('gulp')
 ,   header = require('gulp-header');
 
 // Define header for Bitsy files:
-var chappyHeader = ['/*',
+var bitsyHeader = ['/*',
   '<%= pkg.title %>',
   'Copyright ' + gutils.date("yyyy") + ' Sourcebits www.sourcebits.com',
   'Version: <%= pkg.version %>',
@@ -28,14 +28,15 @@ gulp.task('js', function () {
     'src/promise.js',
     'src/ajax.js',
     'src/modifiers.js',
-    'src/events.js'
+    'src/events.js',
+    'src/router.js'
   ])
 
   .pipe(concat(pkg.name + "-" + pkg.version + ".js"))
-  .pipe(header(chappyHeader, { pkg : pkg}))
+  .pipe(header(bitsyHeader, { pkg : pkg}))
   .pipe(gulp.dest(pkg.projectPath + 'dist/'))
-  .pipe(uglify())
-  .pipe(header(chappyHeader, { pkg : pkg }))
+  .pipe(uglify({mangle: false}))
+  .pipe(header(bitsyHeader, { pkg : pkg }))
   .pipe(rename(pkg.name + "-" + pkg.version + ".min.js"))
   .pipe(gulp.dest(pkg.projectPath + 'dist/'));
 });

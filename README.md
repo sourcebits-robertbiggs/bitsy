@@ -16,6 +16,7 @@ Bitsy was created for making mobile Web apps. It's small, just 12kb minified. Al
 10. [Ajax](#user-content-ajax) - Uses ECMAScript 6 Promies
 11. [Get and Set Styles](#user-content-styles)
 12. [Prepend, Append, Before and After](#user-content-modifiers)
+13. [Routing](#user-content-routing)
 
 ##Building
 
@@ -619,6 +620,12 @@ Notice that our mapped values work just like their original functions. We could 
 ###Minification Alert!
 
 Because of the way mapping of dependencies works, if you are going to minify your code, you need to not minify variables, otherwise the dependency injection will break. This is because the minification changes variable from something like `myDependency` into `aB`. Since the mapping uses a string to map to the variables, this type of aggressive variable reduction breaks the ability to identify the dependencies. To use minification with dependency injection use a version that does not minify variables. Consult the documentation for the minifier you use to learn how to do this.
+
+To prevent Uglify from minify variable, you can pass it the option: `{ mangle: false }`. If you were using pipes in Gulpjs, you would do the JavaScript minification like this:
+
+```
+.pipe(uglify({mangle: false}))
+```
 
 <a name="templates"></a>
 ##8. Templates
@@ -1242,4 +1249,184 @@ element.lastElementChild;
 // Its parent node:
 element.parentElement;
 ```
+
+
+<a name="user-content-routing"></a>
+##13. Routing
+
+Bitsy has a module for routing. This enables you to build apps that use routes to define state. Bitsy's routing uses `#` to difine routes. Each route has methods that enable you to execute code before loading a route, while loading a route and on leaving a route. You can also define actions for a default route and for error handling (404, etc.). You can also implement parameterized routes.
+
+###$.paths
+
+This method is to setup your routes. It takes one argument, a callback in which you define routes.
+
+```
+$.paths(function() {
+  // Define your routes here
+});
+```
+
+###$.route
+
+This method is used to define an actual route. It has the following methods:
+
+- beforeBoarding
+- onboard
+- disembark
+
+You pass a route as the argument to `$.route` method and then use one of the above three methods to define what to do with the route.
+
+####onboard
+
+```
+var welcomeMessage = $('h1');
+$.paths(function() {
+  $.route('#/users').onboard(function() {
+    $.append(welcomeMessage, 'Thanks for dropping by.');
+  });
+});
+```
+
+With the above code in place, if the url gets updated to contain `#/users`, the H1 would get the message appended to it. 
+
+####beforeBoarding
+
+To execute something before loading the route we just need to use the `beforeBoarding` method.
+
+```
+var welcomeMessage = $('h1');
+$.paths(function() {
+  $.route('#/users').onboard(function() {
+    $.append(welcomeMessage, 'Thanks for dropping by.');
+  }).beforeBoarding(function() {
+    console.log('You are about to enter "users".');
+  });
+});
+```
+
+Although we've appended the `beforeBoarding` method after the `onboard` method, it will be executed the `onboard`. 
+
+If an error occurs while executing beforeBoarding, the onboard or disembark methods will not execute.
+
+####disembark
+
+To execute something when the user leaves a route, we use the `dismembark` method:
+
+```
+var welcomeMessage = $('h1');
+$.paths(function() {
+  $.route('#/users').onboard(function() {
+    $.append(welcomeMessage, 'Thanks for dropping by.');
+  }).beforeBoarding(function() {
+    console.log('You are about to enter "users".');
+  }).disembark(function() {
+    console.log('You have now left "users".')
+  });
+});
+```
+
+To implement a default routing behavior, we can do the following:
+
+```
+var welcomeMessage = $('h1');
+$.paths(function() {
+  // Define a default route to load.
+  // This will execute when there is
+  // no matching route:
+  $.router.default("#/users");
+
+  $.route('#/users').onboard(function() {
+    $.append(welcomeMessage, 'Thanks for dropping by.');
+  }).beforeBoarding(function() {
+    console.log('You are about to enter "users".');
+  }).disembark(function() {
+    console.log('You have now left "users".')
+  });
+});
+```
+
+####$.router.error
+
+To define what happens when there is an error loading a route, use the following format:
+
+```
+function notFound(){
+  console.log("404 Not Found");
+}
+$.router.error(notFound);
+```
+
+###$.reroute
+
+We can enhace our error handling by using reroute to send the user to a chosen desitination:
+
+```
+function notFound(){
+  $("#output .content").html("404 Not Found");
+
+  // Define a reroute when there's an error:
+  setTimeout(function() {
+    $.route.reroute('#/users');
+  },2000);
+}
+$.router.error(notFound);
+
+```
+
+####parameters
+
+You can define a route with parameters and then execute code depending on the value of the parameter. You can get the value of the current route parameter by examining `this.params`.
+
+```
+// Expect a route of this format:
+// #/users/:id
+
+$.route("#/users/:id").onboard(function(){
+  if (this.params["id"] >= 4) {
+    console.log('This id is greater than what is available.');
+  } else {
+    console.log('The id is: ' + params["id"]);
+  }
+});
+```
+The above code would work with the following parameters:
+
+- #/users/1
+- #/users/2
+- #/users/3
+
+However, a route greater than 3 would be rejected.
+
+When defining routes, start with the generic and follow with the more specific. Otherwise, the more specific will rule out the more generic routes that follow it.
+
+```
+$.paths(function() {
+  $.route('#/users').onboard(function() {
+    // Do stuff
+  });
+  $.route('#/users/:name').onboard(function() {
+    if (this.params("name") === 'Joe') {
+      console.log('Hey Joe, good to see you back again.');
+    } else {
+      console.log('Welcome, this.params["name"]');
+    }
+  });
+});
+
+```
+
+This will work for `#/users/John`, `#/users/Bob`, `#/users/Joe`, but because we test for Joe first, we can do something special with that name.
+
+####optional route fragments
+
+We can also use optional route fragraments to enable use to handle several possible variations of a url. To define an  optional route fragment, enclose it in parenthesis:
+
+```
+$.route("#/about(/author)").onboard(function(){
+  console.log("About & About/Author are treated the same!");
+});
+```
+
+With this example, the use of `#/about` or `#/about/author` would be treated the same.
+
 

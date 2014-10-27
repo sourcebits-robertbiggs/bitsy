@@ -1,0 +1,214 @@
+<html>
+  <head>
+    <title>Routing Example</title>
+    <script src='../dist/bitsy-1.0.0.js'></script>
+    <style type="text/css">
+        body {
+            font-family: "Helvetica Neue", HelveticaNeue, SegoeUI, Roboto;
+            font-size: 14px;
+            background-color: #f0f0f0;
+            margin: 0;
+            color: #336ba8;
+            -webkit-font-smoothing: subpixel-antialiased;
+        }
+        h1, h2, h3, h4, h5 {
+            font-weight: 200;
+        }
+
+        article {
+            width: 650px;
+            height: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 50px;
+        }
+
+        section {
+            border: 2px solid #336ba8;
+            width: 300px;
+            height: 100%;
+            background-color: #fafafa;
+        }
+
+        #actions{
+            float: left;
+        }
+
+        #output{
+            float: right;
+        }
+       
+        #output .content {
+            padding: 10px;
+        }
+
+        section h3 {
+          margin: 0;
+          border-bottom: 2px solid #336ba8;
+          height: 30px;
+          font-size: 18px;
+          text-align: center;
+          line-height: 30px;
+        }
+
+        section a {
+            display: block;
+            height: 30px;
+            line-height: 30px;
+            text-decoration: none;
+            padding-left: 15px;
+            color: #fafafa;
+        }
+
+        section a:nth-child(even) {
+            background-color: #336ba8;
+            color: #fafafa;
+        }
+
+        section a:nth-child(odd){
+            background-color: #6a98c9;
+        }
+
+        section a:hover {
+            background-color: #254b8a;
+            color: #eee !important;
+        }
+        #output .content > a {
+            margin: 0 -10px;
+        }
+
+        header {
+            width: 646;
+            hheight: 40px;
+            clear: both;
+            margin-bottom: 15px;
+            border: 2px solid #336ba8;
+            text-align: center;
+            background-color: #fafafa;
+        }
+        header h2 {
+            margin: 0;
+            line-height: 40px;
+        }
+    </style>
+
+    <script type="text/javascript">
+    
+
+        $(function(){
+			$.paths(function() {
+	
+				// Default route:
+				$.router.default("#/users");
+				
+				// 404 method:
+				function notFound(){
+					$("#output .content").innerHTML = "404 Not Found";
+					setTimeout(function() {
+						$.route.reroute('#/users');
+					},2000);
+				}
+				
+				// Helper for #/users route.
+				function outputUsers(data) {
+					$("#output .content").innerHTML = data;
+				}
+				// users data:
+				var availableUsers = "<h4>Click on these and use the back button to see how the routes work</h4>\
+                    <a href='#/users/1'>Joe Bodoni</a>\
+					<a href='#/users/2'>John Doe</a>\
+					<a href='#/users/3'>Tom Sawyer</a>\
+					<a href='#/users/4'>Stan Burton</a>";
+				
+				// Handle "#/users" route:
+				$.route("#/users").onboard(function(){
+					outputUsers(availableUsers);
+				}).ondisembark(function() {
+					$.append($("#output .content"),"<p>Users were loaded!</p>");
+				});
+		
+				// This is an example of a parameterized route. This route will 
+				// match routes such as "#/users/1", "#/users/500", and 
+				// "#/users/mike".  Inside the action of that route, you have 
+				// access to the parameters via the "this.params" object.
+				$.route("#/users/:id").onboard(function(){
+					$("#output .content").innerHTML = "You selected the user with ID: " + this.params["id"] + ". ";
+					if (this.params["id"] == 1) {
+						$.append($("#output .content"), " Hey Joe! How you doing?");
+					}
+				});
+		
+				// This is a route with optional route fragments.  Optional 
+				// route fragments are indicated using parenthesis. The route 
+				// below will match both "#/about" and "#/about/author".
+				$.route("#/about(/author)").onboard(function(){
+                    $("#output .content").innerHTML = '';
+					$("#output .content").innerHTML = "About & About/Author share a route!";
+				});
+		
+				// This route is an example of halting execution. If at any 
+				// point a beforeBoarding function returns false, execution is 
+				// halted and the function to load the route is never executed. 
+				// In the example below, we halt execution, and the loading of 
+				// the route is canceled. Even when the loading of a route is 
+				// canceled in this way, any ondisembark function will still be 
+				// executed when the user leaves the current route.
+				$.route("#/contact").onboard(function(){
+					setTimeout(function() {
+						$("#output .content").innerHTML = "Contact has loaded!";
+					}, 1000);
+				}).beforeBoarding(
+					function(){
+						$("#output .content").innerHTML = "This was inserted before the route loaded. If the beforeBoarding function returns false, this will not be replaced.";
+						// Change this to "true" to load the route:
+						return false;
+					}
+				);
+				
+				$.route("#/before_board_disembark").beforeBoarding(function(){
+					$("#output .content").innerHTML = "This was processed before the route loaded!";
+				}).onboard(
+					function(){
+						setTimeout(function() {
+							$("#output .content").innerHTML = " The route just loaded!";
+						}, 2000);
+					}
+				).ondisembark(
+					function(){
+						alert("You left #/before_board_disembark");
+					});
+				
+				$.route("#/my/first(/route)").onboard(function(){
+					alert("Action!")
+				});
+		
+				$.router.error(notFound);
+			});
+        });
+    </script>
+  </head>
+  <body>
+    <article>
+      <header>
+        <h2>Bitsy Routing Examples</h2>
+        <p>Keep an eye on the url in the browser to see how routes work</p>
+      </header>
+      <section id="actions">
+        <h3>Routes</h3>
+        <a href="#/about">normal route</a>
+        <a href="#/about/author">optional route fragment (same as above)</a>
+        <a href="#/before_board_disembark">beforeBording, onboard and ondisembark</a>
+        <a href="#/contact">beforeBoarding (Halt Execution)</a>
+        <a href="#/users">route parameters</a>
+        <a href="#/NotToBeFound">error</a>
+      </section>
+    
+      <section id="output">
+        <h3>Results</h3>
+        <div class="content">
+        </div>
+      </section>
+
+    </article>
+  </body>
+</html>
