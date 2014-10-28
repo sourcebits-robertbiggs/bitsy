@@ -15,6 +15,18 @@ var bitsyHeader = ['/*',
   'Version: <%= pkg.version %>',
   '*/\n'].join('\n');
 
+// Define header for Bitsy examples:
+var bitsyExampleHeader = ['<!DOCTYPE html>',
+'<html lang="en">',
+'<head>',
+'  <meta charset="utf-8">',
+'  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">',
+'  <meta name="apple-mobile-web-app-capable" content="yes">',
+'  <meta name="mobile-web-app-capable" content="yes">',
+'  <meta name="msapplication-tap-highlight" content="no">',
+'  <title>Bitsy</title>',
+'  <script src="../dist/bitsy-<%= pkg.version %>.js"></script>'].join('\n');
+
 // Concat, minify and output JavaScript:
 gulp.task('js', function () {
   gulp.src([
@@ -41,6 +53,23 @@ gulp.task('js', function () {
   .pipe(gulp.dest(pkg.projectPath + 'dist/'));
 });
 
+// Concat and output examples:
+gulp.task('examples', function() {
+  gulp.src([
+    'src/examples/$.html',
+    'src/examples/$$.html',
+    'src/examples/events.html',
+    'src/examples/dependency-injection.html',
+    'src/examples/data-binding.html',
+    'src/examples/mediators.html',
+    'src/examples/promises.html',
+    'src/examples/pub-sub.html',
+    'src/examples/routing.html',
+    'src/examples/templates.html'
+  ])
+  .pipe(header(bitsyExampleHeader, { pkg : pkg}))
+  .pipe(gulp.dest(pkg.projectPath + 'examples/'));
+});
 
 // JSHint:
 gulp.task('jshint', function() {
