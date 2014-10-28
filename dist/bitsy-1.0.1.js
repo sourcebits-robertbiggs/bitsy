@@ -1119,11 +1119,11 @@ $.extend($, {
 		observe : function () {
 			var fn = function(){ $.router.dispatch(location.hash); }
 	
-			/*if (location.hash === '') {
+			if (location.hash === '') {
 				if ($.router.routes.default !== null) {
 					location.hash = $.router.routes.default;
 				}
-			}*/
+			}
 	
 			if ('onhashchange' in window) {
 				window.onhashchange = fn;
