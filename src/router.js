@@ -1,16 +1,8 @@
 $.extend($, {
 
-	domain : function ( ) {
-		return window.location.origin;
-	},
-	
-	path : function ( ) {
-		return window.location.path;
-	},
-	
-	// Routing interface for ChocolateChip. This allows you to use 
-	// routes to trigger dynamic page manipulation. These routes also 
-	// allow the browser back button to reload the previous state.
+	// Routing interface allows you to use routes to trigger
+	// dynamic page manipulation. These routes also allow 
+	// the browser back button to reload the previous state.
 	router : {
 		route : function (path) {
 			if ($.router.routes.defined.hasOwnProperty(path)) {
@@ -39,11 +31,11 @@ $.extend($, {
 			}
 		},
 		match : function (path, parameterize) {
-			var params = {}, 
-			route = null, 
-			possible_routes, 
-			slice, 
-			compare;
+			var params = {}; 
+			var route = null; 
+			var possible_routes; 
+			var slice; 
+			var compare;
 			for (route in $.router.routes.defined) {
 				if (route !== null && route !== undefined) {
 					route = $.router.routes.defined[route];
@@ -71,7 +63,8 @@ $.extend($, {
 			return null;
 		},
 		dispatch : function (passed_route) {
-			var previous_route, matched_route;
+			var previous_route;
+			var matched_route;
 			if ($.router.routes.current !== passed_route) {
 				$.router.routes.previous = $.router.routes.current;
 				$.router.routes.current = passed_route;
@@ -117,7 +110,6 @@ $.extend($, {
 				this.action = null;
 				this._beforeBoarding = null;
 				this._disembark = null;
-				this.params = {};
 				$.router.routes.defined[path] = this;
 			}
 		},
@@ -156,7 +148,9 @@ $.router.core.route.prototype = {
 		return options;
 	},
 	execute : function () {
-		var halt_execution = false, result, previous;
+		var halt_execution = false;
+		var result;
+		var previous;
 
 		if ($.router.routes.defined[this.path].hasOwnProperty('_beforeBoarding')) {
 			if ($.router.routes.defined[this.path]._beforeBoarding) {
@@ -172,18 +166,21 @@ $.router.core.route.prototype = {
 		}
 	}
 };
-$.route = $.router.route;
 
+// Create shortcut for route method:
+$.extend($, {
+  route : $.router.route
+});
+
+// Add the ability to reroute a loading route:
 $.extend($.route, {
 	reroute : function ( route ) {
 		window.location = window.location.host +  route;
 	}
 });
+
+// Create shortcut for loading path definitions:
 $.extend($, {
-	defineRoutes : function ( args ) {
-		args();
-		$.router.observe();
-	},
 	paths : function ( args ) {
 		args();
 		$.router.observe();

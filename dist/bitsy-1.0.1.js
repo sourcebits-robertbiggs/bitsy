@@ -1026,10 +1026,6 @@ $.extend($, {
 		return window.location.origin;
 	},
 	
-	path : function ( ) {
-		return window.location.path;
-	},
-	
 	// Routing interface for ChocolateChip. This allows you to use 
 	// routes to trigger dynamic page manipulation. These routes also 
 	// allow the browser back button to reload the previous state.
@@ -1139,7 +1135,6 @@ $.extend($, {
 				this.action = null;
 				this._beforeBoarding = null;
 				this._disembark = null;
-				this.params = {};
 				$.router.routes.defined[path] = this;
 			}
 		},
@@ -1194,7 +1189,11 @@ $.router.core.route.prototype = {
 		}
 	}
 };
-$.route = $.router.route;
+
+// Create shortcut for route method:
+$.extend($, {
+  route : $.router.route
+});
 
 $.extend($.route, {
 	reroute : function ( route ) {
@@ -1202,10 +1201,6 @@ $.extend($.route, {
 	}
 });
 $.extend($, {
-	defineRoutes : function ( args ) {
-		args();
-		$.router.observe();
-	},
 	paths : function ( args ) {
 		args();
 		$.router.observe();

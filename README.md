@@ -1325,6 +1325,8 @@ $.paths(function() {
 });
 ```
 
+####$.router.default
+
 To implement a default routing behavior, we can do the following:
 
 ```
